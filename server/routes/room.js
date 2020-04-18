@@ -51,7 +51,6 @@ router.post('/newUser/', async (req, res) => {
 // create and initiate a room
 router.post('/newRoom/', async (req, res) => {
     try {
-        // console.log(req.body.roomName);
         const dataBase = await mongo.createRoomDb(req.body.roomName);
         const rooms = await mongo.getRoomDb();
         const userdb = await mongo.getUsersDb();
@@ -81,29 +80,29 @@ router.post('/newRoom/', async (req, res) => {
 });
 
 // join room
-router.get('/join/:name/:user/', async (req, res) => {
+router.post('/join/', async (req, res) => {
     try {
         const userDB = await mongo.getUsersDb();
         const roomDB = await mongo.getRoomDb();
-        const roomdb = await mongo.createRoomDb(req.params.name)
+        const roomdb = await mongo.createRoomDb(req.body.name)
         await roomdb.insertOne({
-            user: req.params.user,
-            text: req.params.user + " joined the room",
+            user: req.body.user,
+            text: req.body.user + " joined the room",
             type: "alert",
             dateCreated: new Date
         });
         await roomDB.update({
-            name: req.params.name
+            name: req.body.name
         }, {
             $push: {
-                users: req.params.user
+                users: req.body.user
             }
         })
         await userDB.update({
-            username: req.params.user
+            username: req.body.user
         }, {
             $push: {
-                rooms: req.params.name
+                rooms: req.body.name
             }
         });
 
@@ -126,6 +125,24 @@ router.get('/:name/', async (req, res) => {
     } catch(err) {
         console.log(err);
         console.log(err.message);
+    }
+});
+
+
+router.post('/newMessage/add/', async (req, res) => {
+    try{
+        const dataBase = await mongo.createRoomDb(req.body.roomName);
+        await dataBase.insertOne({
+            user: req.body.username,
+            text: req.body.text,
+            type: "chat",
+            dateCreated: new Date,
+            room: req.body.roomName
+        })
+    } catch(err) {
+        console.log(err.message)
+        console.log(err)
+        res.status(404).send()
     }
 });
 

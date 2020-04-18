@@ -6,13 +6,13 @@ class getRoom {
   static getRoomList() {
     return new Promise((resolve, reject) => {
       axios.get(url).then((res) => {
-        console.log(url)
+        // console.log(url)
         const data = res.data
         resolve(data)
       }).catch((err) => {
         console.log(err)
         console.log(err.message)
-        console.log(url)
+        // console.log(url)
         reject(err)
       })
     })
@@ -60,7 +60,7 @@ class getRoom {
       axios.post(uri, data).then((res) => {
         console.log(res.status)
         const data = res.data
-        console.log(data)
+        // console.log(data)
         resolve(data)
       }).catch((err) => {
         console.log(err)
@@ -71,12 +71,16 @@ class getRoom {
 
   //join room
   static joinRoom(user, roomName) {
-    var uri = url + "join/" + roomName + "/" + user + "/"
+    var uri = url + "join/"
+    var data = {
+      user: user,
+      name: roomName
+    }
     return new Promise((resolve, reject) => {
-      axios.get(uri).then((res) => {
+      axios.post(uri, data).then((res) => {
         console.log(res.status)
         const data = res.data
-        console.log(data)
+        // console.log(data)
         resolve(data)
       }).catch((err) => {
         console.log(err)
@@ -84,6 +88,25 @@ class getRoom {
       })
     })
   }
+  static addMessage(userName, roomName, message) {
+    var uri = url + "newMessage/add/"
+    var data = {
+      username: userName,
+      roomName: roomName,
+      text: message
+    }
+    return new Promise((resolve, reject) => {
+      axios.post(uri, data).then(res => {
+        console.log(res.status)
+        console.log("Message acknowledged")
+        resolve()
+      }).catch((err) => {
+        console.log(err.message)
+        console.log(err)
+        reject(err)
+      })
+    })
+  } 
 
 }
 

@@ -18,7 +18,7 @@ module.exports = class mongo {
       useNewUrlParser: true,
       useUnifiedTopology: true
     });
-    console.log(roomName);
+    // console.log(roomName);
     return client.db('quarantineQuack').collection(roomName);
   }
 

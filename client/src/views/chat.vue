@@ -1,8 +1,8 @@
 <template>
   <div class="main">
     <div class="test">
-      <div class="row text-center mx-auto">
-        <div class="col-3 ml-auto convBox px-0 heightSet">
+      <div class="row mxheightset text-center mx-auto">
+        <div class="col-3 ml-auto mxheightset convBox px-0 heightSet">
           <div class="heightSet">
             <div class="listHeader">Conversations</div>
             <b-list-group
@@ -32,7 +32,7 @@
             </div>
           </div>
         </div>
-        <div class="col-8 col-md-7 mr-auto px-0 chatPanel heightSet">
+        <div class="col-8 col-md-7 mr-auto mxheightset px-0 chatPanel heightSet">
           <div class="chatHeader">
             <div class="name">{{ room }}</div>
 
@@ -41,32 +41,37 @@
             </div>
           </div>
           <div
-            class="chatDiv"
-            v-for="(message, index) in roomForchats"
-            :key="index"
+            class="chatdivWrapper"
+            id="chatwindow"
           >
             <div
-              class="RowR"
-              v-if="message.user === user.username && message.type === 'chat'"
+              class="chatDiv"
+              v-for="(message, index) in roomForchats"
+              :key="index"
             >
-              <div class="byYou">
-                <span class>
-                  <div class="userName">You</div>
-                  {{ message.text }}
-                  <span class="date">{{ dateParse(message.dateCreated) }}</span>
-                </span>
+              <div
+                class="RowR"
+                v-if="message.user === user.username && message.type === 'chat'"
+              >
+                <div class="byYou">
+                  <span class>
+                    <div class="userName">You</div>
+                    {{ message.text }}
+                    <span class="date">{{ dateParse(message.dateCreated) }}</span>
+                  </span>
+                </div>
               </div>
-            </div>
-            <div
-              class="RowL"
-              v-else-if="message.type === 'chat'"
-            >
-              <div class="byYou byFriend">
-                <span class>
-                  <div class="userName">{{ message.user }}</div>
-                  {{ message.text }}
-                  <span class="date">{{ dateParse(message.dateCreated) }}</span>
-                </span>
+              <div
+                class="RowL"
+                v-else-if="message.type === 'chat'"
+              >
+                <div class="byYou byFriend">
+                  <span class>
+                    <div class="userName">{{ message.user }}</div>
+                    {{ message.text }}
+                    <span class="date">{{ dateParse(message.dateCreated) }}</span>
+                  </span>
+                </div>
               </div>
             </div>
           </div>
@@ -77,16 +82,18 @@
               prepend
               append
             >
-              <textarea
-                @input="auto_grow()"
+              <b-form-input
+                @keyup.enter="messageSubmitHandler"
+                v-model="currentMessage"
                 class="inputBar"
                 id="inputBar"
                 placeholder="Enter message..."
-                rows="1"
-                max-rows="6"
-                no-resize
-              ></textarea>
-              <button class="goaRound">
+              >
+              </b-form-input>
+              <button
+                class="goaRound"
+                @click="messageSubmitHandler"
+              >
                 <i class="faso fas fa-paper-plane"></i>
               </button>
             </b-input-group>
@@ -138,7 +145,7 @@
         ok-variant="success"
         :hide-header-close="true"
         cancel-variant="outline-danger"
-        ok-title="Create"
+        ok-title="Join"
         cancel-title="Cancel"
         button-size="sm"
       >
@@ -163,6 +170,7 @@
             <b-list-group-item
               href="#"
               :active="isIn(room.name)"
+              @click="joinSet(room.name)"
             >{{ room.name }}</b-list-group-item>
           </div>
         </b-list-group>
@@ -185,12 +193,22 @@ export default {
       allRooms: [],
       roomList: [],
       allInOne: [],
-      room: "Home"
+      room: "Home",
+      currentMessage: ""
     };
   },
   sockets: {
     connect() {
       // alert('you\'re connect')
+        console.log('everything looks perfect')
+        this.$socket.on('rightbackatya', () => {
+      })
+    }
+  },
+  watch: {
+    roomForchats: function() {
+      this.autoScroll();
+      return true;
     }
   },
   methods: {
@@ -198,6 +216,32 @@ export default {
     // ...mapActions(["loadAllRooms"]),
     roomUpdate(roomName) {
       this.room = roomName;
+      setTimeout(function() {
+        const chatWindow = document.getElementById("chatwindow");
+        var xH = chatWindow.scrollHeight;
+        chatWindow.scrollTo(0, xH);
+      }, 700);
+      this.autoScroll();
+    },
+    getRoomChatsList(roomname) {
+      var roomObj = this.allInOne.filter(room => {
+        return room.roomName === roomname;
+      });
+      return roomObj[0].chats;
+    },
+    messageSubmitHandler() {
+      var chatlist = this.getRoomChatsList(this.room);
+      chatlist.push({
+        user: this.user.username,
+        type: "chat",
+        text: this.currentMessage,
+        dateCreated: new Date()
+      });
+    },
+    autoScroll() {
+      const chatWindow = document.getElementById("chatwindow");
+      var xH = chatWindow.scrollHeight;
+      chatWindow.scrollTo(0, xH);
     },
     makeToast(Title, message) {
       this.$bvToast.toast(message, {
@@ -209,8 +253,11 @@ export default {
     async joinNewRoom() {
       try {
         var title = "Joined";
-        var mes = await getRoom.joinRoom();
-        this.reloadRooms();
+        var mes = await getRoom.joinRoom(
+          this.user.username,
+          this.searchRoomName
+        );
+        this.loadAllInOne();
         this.makeToast(title, mes);
       } catch (err) {
         console.log(err);
@@ -239,8 +286,12 @@ export default {
       element.style.height = "5px";
       element.style.height = element.scrollHeight + "px";
     },
+    joinSet(roomName) {
+      this.searchRoomName = roomName;
+    },
     resetModal() {
       this.newRoomName = "";
+      this.searchRoomName = "";
     },
     async loadAllInOne() {
       try {
@@ -315,6 +366,8 @@ export default {
   },
   mounted() {
     this.pageLoaded = true;
+    this.autoScroll();
+    this.$socket.emit("hey");
   }
 };
 </script>
@@ -335,3 +388,9 @@ export default {
   /* max-height: 1.9rem; */
 }
 </style>
+
+
+// @input="auto_grow"
+//                 rows="1"
+//                 max-rows="6"
+//                 no-resize

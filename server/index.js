@@ -27,3 +27,7 @@ const io = require('socket.io')(3000);
 io.on('connection', socket => {
     console.log('user connected');
 });
+io.on('hey', socket => {
+  console.log('sockets working just fine')
+  io.emit('rightbackatya')
+});
