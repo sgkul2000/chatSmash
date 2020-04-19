@@ -153,6 +153,7 @@
   background-color: #6c698d;
   font-size: 1rem;
   padding: 0.6rem;
+  margin-right: 0.3rem;
   color: #eee;
 }
 
@@ -264,4 +265,8 @@ menuu {
 
 ::-webkit-scrollbar {
   width: 0px;
+}
+.typing{
+  font-size: 0.6em;
+  color: #ccc;
 }

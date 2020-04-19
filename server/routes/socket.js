@@ -30,6 +30,9 @@ router.post('/:id', async (req, res) => {
 
 
 
+
+
+
 //junk
 // watch: {
 //     allInOne: val => {
@@ -54,3 +57,8 @@ async function loadPosts() {
 }
 
 module.exports = router;
+
+
+
+// const Port = (process.env.PORT).toString()
+// console.log(Port)

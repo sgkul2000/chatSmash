@@ -41,6 +41,7 @@
 <script>
 // @ is an alias to /src
 import { mapActions } from 'vuex'
+import getRoom from '../getRoom'
 
 export default {
   name: "Home",

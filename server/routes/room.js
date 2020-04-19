@@ -34,14 +34,14 @@ router.get('/getRoomList/:username/', async (req, res) => {
 //create user
 router.post('/newUser/', async (req, res) => {
     const userDB = await mongo.getUsersDb();
-    await userDB.update({
+    await userDB.updateOne({
         username: req.body.name
-    },{
+    }, {
         username: req.body.name,
         nickname: req.body.nickname,
         dateCreated: new Date,
-        rooms: ['team quarantine quack']
-    },{
+        rooms: ['Team chatSmash']
+    }, {
         upsert: true
     });
     res.status(200).send();
@@ -60,19 +60,19 @@ router.post('/newRoom/', async (req, res) => {
             users: [req.body.user]
         });
         await dataBase.insertOne({
-            user: "team quarantine Quack",
+            user: "Team chatSmash",
             text: "Room Created",
             type: "alert",
             dateCreated: new Date
         });
-        await userdb.update({
+        await userdb.updateOne({
             username: req.body.user
         }, {
             $push: {
                 rooms: req.body.roomName
             }
         });
-        res.status(201).send('Room "'+ req.body.roomName +'" was successfully created!');
+        res.status(201).send('Room "' + req.body.roomName + '" was successfully created!');
     } catch (err) {
         console.log(err);
         res.status(404).send();
@@ -91,14 +91,14 @@ router.post('/join/', async (req, res) => {
             type: "alert",
             dateCreated: new Date
         });
-        await roomDB.update({
+        await roomDB.updateOne({
             name: req.body.name
         }, {
             $push: {
                 users: req.body.user
             }
         })
-        await userDB.update({
+        await userDB.updateOne({
             username: req.body.user
         }, {
             $push: {
@@ -119,10 +119,35 @@ router.post('/join/', async (req, res) => {
 
 //get room chats
 router.get('/:name/', async (req, res) => {
-    try{
+    try {
         const dataBase = await mongo.createRoomDb(req.params.name);
         res.send(await dataBase.find({}).toArray());
-    } catch(err) {
+    } catch (err) {
+        console.log(err);
+        console.log(err.message);
+    }
+});
+
+router.post('/deleteRoom/', async (req, res) => {
+    try {
+        const dataBase = await mongo.createRoomDb(req.body.roomName);
+        const users = await mongo.getUsersDb();
+        const roomDB = await mongo.getRoomDb();
+        await dataBase.drop();
+        await roomDB.deleteMany({
+            name: req.body.roomName
+        });
+        await users.updateMany({}, {
+
+            $pull: {
+                rooms: {
+                    $in: [req.body.roomName]
+                }
+            }
+
+        });
+        res.status(201).send()
+    } catch (err) {
         console.log(err);
         console.log(err.message);
     }
@@ -130,7 +155,7 @@ router.get('/:name/', async (req, res) => {
 
 
 router.post('/newMessage/add/', async (req, res) => {
-    try{
+    try {
         const dataBase = await mongo.createRoomDb(req.body.roomName);
         await dataBase.insertOne({
             user: req.body.username,
@@ -139,7 +164,7 @@ router.post('/newMessage/add/', async (req, res) => {
             dateCreated: new Date,
             room: req.body.roomName
         })
-    } catch(err) {
+    } catch (err) {
         console.log(err.message)
         console.log(err)
         res.status(404).send()

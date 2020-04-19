@@ -29,7 +29,7 @@ class getRoom {
         resolve(data)
       }).catch((err) => {
         console.log(err)
-        console.log(err.message)
+        console.log('user not signed in')
         reject(err)
       })
     })
@@ -88,6 +88,7 @@ class getRoom {
       })
     })
   }
+  //add message
   static addMessage(userName, roomName, message) {
     var uri = url + "newMessage/add/"
     var data = {
@@ -107,6 +108,40 @@ class getRoom {
       })
     })
   } 
+  //delete room
+  static deleteRoom(roomName) {
+    const data = {
+      roomName: roomName
+    }
+    const uri = url + "deleteRoom/"
+    return new Promise((resolve, reject) => {
+      axios.post(uri, data).then((res) => {
+        console.log(res.status)
+        resolve()
+      }).catch(err => {
+        console.log(err)
+        reject(err)
+      })
+    })
+  }
+
+  //create or login user
+  static userLogin(userName, nickName) {
+    var uri = url+ "newUser/"
+    var data = {
+      name: userName,
+      nickname: nickName
+    }
+    return new Promise((resolve, reject) => {
+      axios.post(uri, data).then((res) => {
+        console.log(res.status)
+        resolve()
+      }).catch(err => {
+        console.log(err)
+        reject(err)
+      })
+    })
+  }
 
 }
 

@@ -19,6 +19,8 @@
 
 #nav {
   /* top: 0; */
+  /* display: none; */
+  opacity: 0;
   z-index: 200;
   padding: 30px;
 }

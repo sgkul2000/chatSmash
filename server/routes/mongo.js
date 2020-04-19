@@ -1,11 +1,11 @@
 const mongodb = require('mongodb');
-
+const mongoUri = "mongodb://localhost"
 
 
 module.exports = class mongo {
   //get room db
   static async getRoomDb() {
-    const client = await mongodb.MongoClient.connect('mongodb://localhost', {
+    const client = await mongodb.MongoClient.connect(mongoUri, {
       useNewUrlParser: true,
       useUnifiedTopology: true
     });
@@ -14,7 +14,7 @@ module.exports = class mongo {
 
   //return custom room db
   static async createRoomDb(roomName) {
-    const client = await mongodb.MongoClient.connect('mongodb://127.0.0.1:27017/', {
+    const client = await mongodb.MongoClient.connect(mongoUri, {
       useNewUrlParser: true,
       useUnifiedTopology: true
     });
@@ -24,7 +24,7 @@ module.exports = class mongo {
 
   // get users DB
   static async getUsersDb() {
-    const client = await mongodb.connect('mongodb://localhost', {
+    const client = await mongodb.connect(mongoUri, {
       useNewUrlParser: true,
       useUnifiedTopology: true
     });

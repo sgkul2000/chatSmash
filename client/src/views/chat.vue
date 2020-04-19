@@ -34,10 +34,19 @@
         </div>
         <div class="col-8 col-md-7 mr-auto mxheightset px-0 chatPanel heightSet">
           <div class="chatHeader">
-            <div class="name">{{ room }}</div>
+            <div class="name"> {{ room }} <br>
+              <div
+                class="typing"
+                v-show="typingVariable.roomName === room && room !== 'Home'"
+              >{{ typingVariable.typeString }}</div>
+            </div>
 
             <div class="menu">
-              <i class="faso fas fa-ellipsis-v"></i>
+              <i
+                v-if="this.room !== 'Home'"
+                v-b-modal.deleteModal
+                class="faso fas fa-trash-alt"
+              ></i>
             </div>
           </div>
           <div
@@ -84,6 +93,7 @@
             >
               <b-form-input
                 @keyup.enter="messageSubmitHandler"
+                @input="typeHandler"
                 v-model="currentMessage"
                 class="inputBar"
                 id="inputBar"
@@ -176,6 +186,24 @@
         </b-list-group>
       </b-modal>
     </div>
+    <div class="deleteConfirm">
+      <b-modal
+        id="deleteModal"
+        ref="deleteModal"
+        title="Confirm Deletion"
+        header-bg-variant="dark"
+        header-text-variant="light"
+        ok-variant="success"
+        @ok="deleteRoom"
+        :hide-header-close="true"
+        cancel-variant="outline-danger"
+        ok-title="Yes"
+        cancel-title="Cancel"
+        button-size="sm"
+      >
+        Are you sure you want to delete '{{ room }}' ?
+      </b-modal>
+    </div>
   </div>
 </template>
 
@@ -188,21 +216,45 @@ export default {
   data() {
     return {
       newRoomName: "",
+      typingVariable: {
+        typeString: "",
+        roomName: ""
+      },
       searchRoomName: "",
       pageLoaded: false,
       allRooms: [],
       roomList: [],
       allInOne: [],
       room: "Home",
-      currentMessage: ""
+      currentMessage: "",
+      typing: {
+        user: "",
+        roomName: ""
+      }
     };
   },
   sockets: {
     connect() {
       // alert('you\'re connect')
-        console.log('everything looks perfect')
-        this.$socket.on('rightbackatya', () => {
-      })
+      // console.log("connection successful");
+    },
+    rightbackatya() {
+      // console.log("everything looks perfect");
+    },
+    someonesTyping(data) {
+      // console.log(data)
+      this.typingDisplay(data);
+      // this.typingVariable.typeString = data.user + "is typing..."
+      // this.typingVariable.roomName = data.roomName
+    },
+    newMessageBroadcast(data) {
+      // console.log('message recieved');
+      this.newMessageHandler(data);
+    },
+    updateRoom() {
+      // console.log('rooms updated');
+      this.loadAllInOne();
+      // console.log('loaded rooms successfully');
     }
   },
   watch: {
@@ -223,10 +275,24 @@ export default {
       }, 700);
       this.autoScroll();
     },
+    async deleteRoom() {
+      try {
+        await getRoom.deleteRoom(this.room);
+        this.$socket.emit('newRoomCreated');
+        var title = "Room Deleted";
+        var message = "Room " + this.room + " was deleted successfully";
+        this.makeToast(title, message);
+        this.room = "Home";
+        this.loadAllInOne();
+      } catch (err) {
+        console.log(err);
+      }
+    },
     getRoomChatsList(roomname) {
       var roomObj = this.allInOne.filter(room => {
         return room.roomName === roomname;
       });
+
       return roomObj[0].chats;
     },
     messageSubmitHandler() {
@@ -237,6 +303,45 @@ export default {
         text: this.currentMessage,
         dateCreated: new Date()
       });
+      var mesData = {
+        user: this.user.username,
+        text: this.currentMessage,
+        roomName: this.room
+      };
+      this.$socket.emit("newMessage", mesData);
+      getRoom.addMessage(this.user.username, this.room, this.currentMessage);
+    },
+    newMessageHandler(data) {
+      if (this.roomList.includes(data.roomName)) {
+        this.makeToast(data.roomName, data.text);
+        var chatlist = this.getRoomChatsList(data.roomName);
+        chatlist.push({
+          user: data.user,
+          type: "chat",
+          text: data.text,
+          dateCreated: new Date()
+        });
+      }
+    },
+    typeHandler() {
+      var data = {
+        user: this.user.username,
+        roomName: this.room,
+        nickname: this.user.nickname
+      };
+      // console.log(data);
+      this.$socket.emit("typing", data);
+    },
+    typingDisplay(data) {
+      this.typingVariable.typeString = data.nickname + " is typing...";
+      this.typingVariable.roomName = data.roomName;
+      setTimeout(() => {
+        this.typingVariable = {
+          typeString: "",
+          roomName: "",
+          nickname: ""
+        };
+      }, 2000);
     },
     autoScroll() {
       const chatWindow = document.getElementById("chatwindow");
@@ -246,12 +351,20 @@ export default {
     makeToast(Title, message) {
       this.$bvToast.toast(message, {
         title: Title,
-        autoHideDelay: 2500,
+        autoHideDelay: 2000,
         appendToast: false
       });
     },
     async joinNewRoom() {
       try {
+        if(this.roomList.includes(this.searchRoomName)){
+          this.makeToast('Oops!', 'You are already a part of the room!')
+          return null
+        }
+        if (!this.allRoomListComp.includes(this.searchRoomName)) {
+          this.makeToast("Error!", "Choose a correct room name to join!");
+          return null;
+        }
         var title = "Joined";
         var mes = await getRoom.joinRoom(
           this.user.username,
@@ -266,12 +379,17 @@ export default {
     },
     async createNewRoom() {
       try {
+        if (this.newRoomName === "") {
+          this.makeToast("Error!", "Please enter a valid room name.");
+          return null;
+        }
         var title = "Room Created";
         var mes = await getRoom.createRoom(
           this.user.username,
           this.newRoomName
         );
         this.loadAllInOne();
+        this.$socket.emit("newRoomCreated");
         this.makeToast(title, mes);
       } catch (err) {
         console.log(err);
@@ -327,6 +445,14 @@ export default {
     roomListComp() {
       return this.roomList;
     },
+    allRoomListComp() {
+      var newList = []
+      var i=0;
+      for(i=0; i<this.allRooms.length; i++){
+        newList.push(this.allRooms[i].name)
+      }
+      return newList
+    },
     filteredList() {
       if (this.searchRoomName.length > 1) {
         return this.allRooms.filter(room => {
@@ -368,6 +494,7 @@ export default {
     this.pageLoaded = true;
     this.autoScroll();
     this.$socket.emit("hey");
+    // console.log("just called socket");
   }
 };
 </script>
@@ -378,6 +505,7 @@ export default {
 .inputBar {
   width: 80% !important;
   padding: 0.2rem 1rem;
+  margin-left: 0.7rem;
   margin-right: 0.4rem;
   border-radius: 15px !important;
   /* height: 1.9rem; */
