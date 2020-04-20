@@ -312,6 +312,7 @@ export default {
       };
       this.$socket.emit("newMessage", mesData);
       getRoom.addMessage(this.user.username, this.room, this.currentMessage);
+      this.currentMessage = "";
     },
     newMessageHandler(data) {
       if (this.roomList.includes(data.roomName)) {
