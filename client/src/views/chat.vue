@@ -137,6 +137,7 @@
             id="newRoom-input"
             v-model="newRoomName"
             required
+            @keyup.enter="createNewRoom"
             placeholder="Enter Room name..."
           ></b-form-input>
         </b-form-group>
@@ -167,6 +168,7 @@
           <b-form-input
             id="joinRoom-input"
             v-model="searchRoomName"
+            @keyup.enter="joinNewRoom"
             required
             placeholder="Search for an existing room..."
           ></b-form-input>
@@ -278,7 +280,7 @@ export default {
     async deleteRoom() {
       try {
         await getRoom.deleteRoom(this.room);
-        this.$socket.emit('newRoomCreated');
+        this.$socket.emit("newRoomCreated");
         var title = "Room Deleted";
         var message = "Room " + this.room + " was deleted successfully";
         this.makeToast(title, message);
@@ -357,9 +359,10 @@ export default {
     },
     async joinNewRoom() {
       try {
-        if(this.roomList.includes(this.searchRoomName)){
-          this.makeToast('Oops!', 'You are already a part of the room!')
-          return null
+        this.$refs["joinRoomModal"].hide();
+        if (this.roomList.includes(this.searchRoomName)) {
+          this.makeToast("Oops!", "You are already a part of the room!");
+          return null;
         }
         if (!this.allRoomListComp.includes(this.searchRoomName)) {
           this.makeToast("Error!", "Choose a correct room name to join!");
@@ -370,7 +373,7 @@ export default {
           this.user.username,
           this.searchRoomName
         );
-        this.loadAllInOne();
+        await this.loadAllInOne();
         this.makeToast(title, mes);
       } catch (err) {
         console.log(err);
@@ -379,6 +382,7 @@ export default {
     },
     async createNewRoom() {
       try {
+        this.$refs["createRoomModal"].hide();
         if (this.newRoomName === "") {
           this.makeToast("Error!", "Please enter a valid room name.");
           return null;
@@ -446,12 +450,12 @@ export default {
       return this.roomList;
     },
     allRoomListComp() {
-      var newList = []
-      var i=0;
-      for(i=0; i<this.allRooms.length; i++){
-        newList.push(this.allRooms[i].name)
+      var newList = [];
+      var i = 0;
+      for (i = 0; i < this.allRooms.length; i++) {
+        newList.push(this.allRooms[i].name);
       }
-      return newList
+      return newList;
     },
     filteredList() {
       if (this.searchRoomName.length > 1) {

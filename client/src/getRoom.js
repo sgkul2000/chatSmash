@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const url = "/api/room/"
+const url = "https://shielded-beyond-17297.herokuapp.com/api/room/"
 
 class getRoom {
   static getRoomList() {

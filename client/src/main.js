@@ -15,15 +15,9 @@ Vue.config.productionTip = false
 Vue.use(BootstrapVue)
 
 
-console.log(process.env.VUE_APP_PORT);
-var port = process.env.VUE_APP_PORT;
-const Port = port.toString();
-console.log("the port is " + Port);
-
-
 Vue.use(new VueSocketIO({
   debug: true,
-  connection: 'http://localhost:' + Port,
+  connection: 'https://shielded-beyond-17297.herokuapp.com/',
   vuex: {
     store,
     actionPrefix: 'SOCKET_',
