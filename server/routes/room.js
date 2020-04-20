@@ -34,16 +34,23 @@ router.get('/getRoomList/:username/', async (req, res) => {
 //create user
 router.post('/newUser/', async (req, res) => {
     const userDB = await mongo.getUsersDb();
-    await userDB.updateOne({
-        username: req.body.name
-    }, {
-        username: req.body.name,
-        nickname: req.body.nickname,
-        dateCreated: new Date,
-        rooms: ['Team chatSmash']
-    }, {
-        upsert: true
-    });
+    var cond = await userDB.find({username: req.body.name});
+    console.log("cond value = "+cond)
+    if (cond = []) {
+            console.log('if statement working fine');
+            await userDB.updateMany({
+                username: req.body.name
+            }, {
+                $set: {
+                    username: req.body.name,
+                    nickname: req.body.nickname,
+                    dateCreated: new Date,
+                    rooms: ['Team chatSmash']
+                }
+            }, {
+                upsert: true
+            });
+    }
     res.status(200).send();
 });
 

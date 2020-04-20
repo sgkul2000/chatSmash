@@ -4,7 +4,7 @@
       <div class="row text-center">
         <div class="col-sm-5 mx-auto loginDialog">
           <h1>Login</h1>
-          <b-form @submit="redirect">
+          <b-form @submit.prevent="redirect">
             <div class="goLeft">
               <b-form-group
                 id="input-group-1"
@@ -20,7 +20,11 @@
                   placeholder="Enter your Username"
                 ></b-form-input>
               </b-form-group>
-              <b-form-group id="input-group-2" label="Name:" label-for="input-2">
+              <b-form-group
+                id="input-group-2"
+                label="Name:"
+                label-for="input-2"
+              >
                 <b-form-input
                   id="input-2"
                   v-model="form.nickname"
@@ -30,7 +34,10 @@
                 ></b-form-input>
               </b-form-group>
             </div>
-            <b-button type="submit" variant="primary">Submit</b-button>
+            <b-button
+              type="submit"
+              variant="primary"
+            >Submit</b-button>
           </b-form>
         </div>
       </div>
@@ -40,8 +47,8 @@
 
 <script>
 // @ is an alias to /src
-import { mapActions } from 'vuex'
-import getRoom from '../getRoom'
+import { mapActions } from "vuex";
+import getRoom from "../getRoom";
 
 export default {
   name: "Home",
@@ -54,23 +61,24 @@ export default {
     };
   },
   methods: {
-    ...mapActions([
-      'loginUser'
-    ]),
-    redirect() {
-      const payload = {
-        username: this.form.username,
-        nickname: this.form.nickname
+    ...mapActions(["loginUser"]),
+    async redirect() {
+      try {
+        await getRoom.userLogin(this.form.username, this.form.nickname)
+        const payload = {
+          username: this.form.username,
+          nickname: this.form.nickname
+        };
+        this.loginUser(payload);
+        this.form = {
+          username: "",
+          nickname: ""
+        };
+        this.$router.push("chat/");
+      } catch (err) {
+        console.log(err);
       }
-      
-      this.loginUser(payload)
-      this.form = {
-        username: "",
-        nickname: ""
-      }
-      this.$router.push('chat/');
     }
-    
   }
 };
 </script>

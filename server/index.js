@@ -1,10 +1,11 @@
-const app = require('express')();
+const express = require('express')
+const app = express();
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);
 
-require('dotenv').config({ path: __dirname + '/.env' });
+if(process.env.NODE_ENV !== 'production') require('dotenv').config({ path: __dirname + '/.env' });
 
 
 // const app = express();
@@ -15,6 +16,21 @@ app.use(cors());
 
 const room = require('./routes/room');
 // const chat = require('./routes/chat');
+
+
+//handle production
+if(process.env.NODE_ENV === 'production'){
+  //static folder to public
+  app.use(express.static(__dirname + '/public'));
+  //handle single page app
+  app.get(/.*/, (req, res) => {
+    res.sendFile(__dirname + '/public/index.html')
+  });
+}
+
+
+
+
 const port = process.env.PORT || 5000;
 
 // console.log(process.env.PORT)

@@ -1,6 +1,9 @@
-.DS_Store
+/client
 node_modules/
+.DS_Store
+
 logs/
 
 *.env
 ecosystem.config.js
+
