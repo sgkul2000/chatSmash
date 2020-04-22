@@ -1,6 +1,8 @@
 import axios from 'axios'
 
 const url = "https://shielded-beyond-17297.herokuapp.com/api/room/"
+// const url = "/api/room/"
+
 
 class getRoom {
   static getRoomList() {
@@ -107,7 +109,7 @@ class getRoom {
         reject(err)
       })
     })
-  } 
+  }
   //delete room
   static deleteRoom(roomName) {
     const data = {
@@ -128,7 +130,7 @@ class getRoom {
   //create or login user
   static userLogin(userName, nickName) {
     var uri = url+ "newUser/"
-    var data = {
+    const data = {
       name: userName,
       nickname: nickName
     }

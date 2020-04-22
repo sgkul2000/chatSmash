@@ -1,69 +1,77 @@
-#sidebar-1 {
-  max-height: 50%;
-  /* padding: 10% 0; */
-  /* margin: 20% 0; */
-  min-width: 50%;
-}
-
 .convBox {
   background-color: #555555;
-  border-radius: 5px;
-  max-height: 70vh !important;
   border: 1px solid rgba(30, 30, 30, 0.2);
+  /* max-height: 100vh !important; */
+  position: relative;
 }
 
 .listHeader {
   font-size: 1.7rem;
-  padding: 1rem 1rem;
   color: #eee;
   background-color: #6c698d;
-  border-top-left-radius: 5px;
-  border-top-right-radius: 5px;
+  /* border-top-left-radius: 5px;
+  border-top-right-radius: 5px; */
+  width: 100% !important;
+  height: 4rem !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+::placeholder {
+  color: #AAA;
+}
+
+.roomSearch {
+  width: 100%;
+  /* height: 100%; */
+  font-size: 1rem;
+  font-weight: 300;
+  color: #ddd;
+  background-color: rgb(97, 94, 128);
+  padding: 0.4rem 0.8rem;
+  margin: 1rem 0.6rem !important;
+  border: 0.06rem solid #373c45 !important;
+  border-radius: 5px;
+}
+
+.roomSearch:focus {
+  outline: none !important;
 }
 
 .listGroup {
-  background-color: #6c698d;
   border-top-left-radius: none !important;
   border-top-right-radius: none !important;
-}
-
-.listItem {
-  /* margin: 1rem 2rem; */
-  /* padding: 0.5rem 1rem 0rem 1rem; */
-  /* font-size: 1.3rem; */
-  border: none;
-}
-
-.listGroupItem {
-  background-color: #343434 !important;
+  background-color: #232526 !important;
   color: #eee !important;
+  border: none !important;
   text-align: left !important;
-  border: 0.05px solid rgba(30, 30, 30, 0.3) !important;
   cursor: pointer;
 }
 
+.listGroupItem {
+  background-color: #232526 !important;
+  border-bottom: 5px solid #232526 !important;
+}
+
 .listGroupItem:hover {
-  background-color: #4b4b4b !important;
+  border-bottom: 5px solid #373c45 !important;
+  background-color: #2d2d2d !important;
   transition: background-color 0.1s ease-in-out;
 }
 
 .heightSet {
-  min-height: 70vh !important;
-}
-
-.group-list-items {
-  background-color: red;
+  height: 100vh !important;
+  max-height: 100vh !important;
 }
 
 .chatPanel {
   background-color: #343434;
-  border-radius: 5px;
-  margin-left: 0.5rem;
-  max-height: 70vh !important;
 }
 
 .chatHeader {
   display: flex;
+  position: relative;
   align-items: center;
   justify-content: space-between;
   text-align: left;
@@ -71,8 +79,27 @@
   color: #eee;
   font-size: 1.4rem;
   padding: 0.5rem 2rem;
-  border-top-left-radius: 5px;
-  border-top-right-radius: 5px;
+  height: 4.01rem !important;
+  /* border-top-left-radius: 5px;
+  border-top-right-radius: 5px; */
+}
+
+.chatIconDiv{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: calc( 100vh - 4.01rem );
+  flex-direction: column;
+}
+.chatIcon{
+  height: 30vh;
+}
+
+.idleText{
+  font-size: 0.9rem;
+  color: #ddd;
+  padding: 0.5rem  0;
+  font-weight: 400;
 }
 
 .chatdivWrapper {
@@ -102,6 +129,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  margin-bottom: 1.5rem;
 }
 
 .A {
@@ -140,7 +168,7 @@
   background-color: transparent;
   border: none;
   border-radius: none;
-  z-index: 300;
+  z-index: 200;
 }
 
 .goaRound:focus {
@@ -153,8 +181,8 @@
   background-color: #6c698d;
   font-size: 1rem;
   padding: 0.6rem;
-  margin-right: 0.3rem;
   color: #eee;
+  margin-right: 0 !important;
 }
 
 .faso:hover {
@@ -166,19 +194,6 @@
   background-color: rgb(109, 107, 134);
   opacity: 0.7;
   border: none !important;
-}
-
-.fA {
-  font-family: FontAwesome;
-  font-style: normal;
-}
-
-.mxheightset {
-  max-height: 70vh;
-}
-
-.col {
-  text-align: right;
 }
 
 .RowR {
@@ -219,11 +234,6 @@
   z-index: 200;
 }
 
-.newRoom {
-  position: absolute;
-  bottom: 1rem;
-  right: 1rem;
-}
 
 menuu {
   position: absolute;
@@ -237,6 +247,11 @@ menuu {
 
 .dropdown-toggle::after {
   content: none !important;
+}
+
+.name {
+  position: relative;
+  bottom: 0.2rem;
 }
 
 .userName {
@@ -260,13 +275,17 @@ menuu {
 #dropdown-right__BV_toggle_:focus {
   outline: none;
   border: none;
-
 }
 
 ::-webkit-scrollbar {
   width: 0px;
 }
-.typing{
+
+.typing {
+  width: 8rem;
   font-size: 0.6em;
   color: #ccc;
+  position: absolute;
+  top: 1.7rem;
+  left: 0.1rem;
 }

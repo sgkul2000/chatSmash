@@ -15,9 +15,17 @@ Vue.config.productionTip = false
 Vue.use(BootstrapVue)
 
 
+const model =  process.env.NODE_ENV;
+console.log(model);
+if ( model === 'development' ) {
+  var connectionLink = 'http://localhost:8000/';
+} else {
+  connectionLink = 'https://shielded-beyond-17297.herokuapp.com/'; 
+}
+
 Vue.use(new VueSocketIO({
   debug: true,
-  connection: 'https://shielded-beyond-17297.herokuapp.com/',
+  connection: connectionLink ,
   vuex: {
     store,
     actionPrefix: 'SOCKET_',

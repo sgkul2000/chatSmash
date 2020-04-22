@@ -2,6 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import Chat from '../views/chat.vue'
+import Chatmobile from '../views/Chatmobile.vue'
 
 Vue.use(VueRouter)
 
@@ -15,6 +16,11 @@ Vue.use(VueRouter)
     path: '/chat/',
     name: 'Chat',
     component: Chat
+  },
+  {
+    path: '/chat/mobile/',
+    name: 'Chatmobile',
+    component: Chatmobile
   }
 ]
 
