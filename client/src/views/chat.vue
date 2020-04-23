@@ -467,9 +467,10 @@ body {
 }
 
 .newRoom {
-  position: fixed;
+  position: fixed !important;
   bottom: 0.8rem;
   left: 22vw;
+  right: 78vw;
 }
 
 

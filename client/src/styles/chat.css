@@ -129,7 +129,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 0.5rem !important;
 }
 
 .A {
@@ -235,14 +235,10 @@
 }
 
 
-menuu {
-  position: absolute;
-  right: 1rem;
-  bottom: 1rem;
-}
 
 .dropdown-menu {
   z-index: 300;
+  /* background-color: #222; */
 }
 
 .dropdown-toggle::after {
